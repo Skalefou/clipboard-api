@@ -1,14 +1,16 @@
 package org.skalefou.clipboardapi.feature.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 // This class represents the model of the 'clipboard' table, storing the content and dates linked
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "clipboard")
 public class Clipboard {
     @Id
