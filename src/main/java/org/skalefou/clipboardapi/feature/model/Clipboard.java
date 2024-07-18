@@ -32,7 +32,6 @@ public class Clipboard {
     @Column(name = "access")
     private String access;
 
-    @ManyToOne
-    @JoinColumn(name = "id_user", referencedColumnName = "id")
-    private Users user;
+    @Column(name = "user_id")
+    private UUID userId;
 }

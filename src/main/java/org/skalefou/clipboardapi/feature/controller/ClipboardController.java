@@ -1,18 +1,35 @@
 package org.skalefou.clipboardapi.feature.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.skalefou.clipboardapi.feature.model.Clipboard;
 import org.skalefou.clipboardapi.feature.service.ClipboardService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/clipboard")
 public class ClipboardController {
-    private ClipboardService clipboardService;
+    private final ClipboardService clipboardService;
 
-    @GetMapping
-    public Clipboard getClipboard() {
-        return clipboardService.getClipboard();
+    @GetMapping("/{id}")
+    public Clipboard getClipboard(@PathVariable UUID id) {
+        Clipboard clipboard = clipboardService.getClipboard(id);
+        if (clipboard == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Clipboard not found or has no ID");
+        }
+        return clipboard;
+    }
+
+    @PostMapping
+    public Clipboard createClipboard(@RequestBody Clipboard clipboard) {
+        clipboard = clipboardService.createClipboard(clipboard);
+        if (clipboard == null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Clipboard invalid");
+        }
+        return clipboard;
     }
 }
