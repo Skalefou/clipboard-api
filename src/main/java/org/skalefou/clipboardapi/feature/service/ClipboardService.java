@@ -20,18 +20,18 @@ public class ClipboardService {
     private final Random random = new Random();
 
 
-    public Clipboard getClipboard(UUID id) {
-        return clipboardRepository.findClipboardById(id);
+    public Clipboard getClipboardByAccess(String access) {
+        return clipboardRepository.getClipboardByAccess(access);
     }
 
     public Clipboard createClipboard(Clipboard clipboard) {
         Set<String> allAccess = new HashSet<>(clipboardRepository.findAllAccess());
-        LocalDate today = LocalDate.now();
-        LocalDate expirationDateTest = clipboard.getExpirationTime().toLocalDate();
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime expirationDateTest = clipboard.getExpirationTime();
 
         if (expirationDateTest == null) {
-            clipboard.setExpirationTime(today.plusWeeks(2).atStartOfDay());
-            expirationDateTest = clipboard.getExpirationTime().toLocalDate();
+            clipboard.setExpirationTime(today.plusWeeks(2));
+            expirationDateTest = clipboard.getExpirationTime();
         }
 
         if (expirationDateTest.isBefore(today) ||
@@ -48,6 +48,10 @@ public class ClipboardService {
 
         UUID userId = (clipboard.getUserId() != null) ? clipboard.getUserId() : null;
         return clipboardRepository.createClipboard(UUID.randomUUID(), clipboard.getExpirationTime(), randomAccess, userId);
+    }
+
+    public Clipboard updateClipboard(Clipboard clipboard) {
+        return clipboardRepository.updateClipboard(clipboard.getContent(), clipboard.getAccess());
     }
 
 }

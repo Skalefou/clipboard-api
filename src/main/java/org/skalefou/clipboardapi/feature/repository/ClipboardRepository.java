@@ -15,8 +15,8 @@ import java.util.UUID;
 @Repository
 public interface ClipboardRepository extends JpaRepository<Clipboard, UUID> {
 
-    @Query(value = "SELECT * FROM clipboard WHERE id = :id", nativeQuery = true)
-    Clipboard findClipboardById(@Param("id") UUID id);
+    @Query(value = "SELECT * FROM clipboard WHERE access = :access", nativeQuery = true)
+    Clipboard getClipboardByAccess(@Param("access") String access);
 
     @Query(value = "INSERT INTO clipboard (id, date_creation, expiration_time, last_update, access, id_user) " +
             "VALUES (:id, CURRENT_TIMESTAMP, :expiration_time, CURRENT_TIMESTAMP, :access, :id_user) " +
@@ -28,4 +28,11 @@ public interface ClipboardRepository extends JpaRepository<Clipboard, UUID> {
 
     @Query(value = "SELECT clipboard.access FROM clipboard", nativeQuery = true)
     List<String> findAllAccess();
+
+    @Query(value = "UPDATE clipboard SET content = :content, last_update = CURRENT_TIMESTAMP " +
+            "WHERE access = :access " +
+            "RETURNING *", nativeQuery = true)
+    Clipboard updateClipboard(@Param("content") String content,
+                              @Param("access") String access);
+
 }

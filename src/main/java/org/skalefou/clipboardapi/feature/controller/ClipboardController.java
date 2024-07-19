@@ -15,9 +15,9 @@ import java.util.UUID;
 public class ClipboardController {
     private final ClipboardService clipboardService;
 
-    @GetMapping("/{id}")
-    public Clipboard getClipboard(@PathVariable UUID id) {
-        Clipboard clipboard = clipboardService.getClipboard(id);
+    @GetMapping("/{access}")
+    public Clipboard getClipboardByAccess(@PathVariable String access) {
+        Clipboard clipboard = clipboardService.getClipboardByAccess(access);
         if (clipboard == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Clipboard not found or has no ID");
         }
@@ -27,6 +27,15 @@ public class ClipboardController {
     @PostMapping
     public Clipboard createClipboard(@RequestBody Clipboard clipboard) {
         clipboard = clipboardService.createClipboard(clipboard);
+        if (clipboard == null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Clipboard invalid");
+        }
+        return clipboard;
+    }
+
+    @PutMapping
+    public Clipboard updateClipboard(@RequestBody Clipboard clipboard) {
+        clipboard = clipboardService.updateClipboard(clipboard);
         if (clipboard == null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Clipboard invalid");
         }
