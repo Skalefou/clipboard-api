@@ -11,8 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -65,6 +64,19 @@ public class ClipboardServiceTests {
 
     @Test
     void testDeleteClipboard() {
+        // Init
+        Clipboard inputClipboard = new Clipboard();
+        inputClipboard.setExpirationTime(LocalDateTime.now().plusDays(1));
+        inputClipboard.setUserId(UUID.randomUUID());
 
+        Clipboard createdClipboard = clipboardService.createClipboard(inputClipboard);
+
+        // Exec
+        boolean deleteResult = clipboardService.deleteClipboard(createdClipboard.getAccess());
+
+        // Verif
+        assertTrue(deleteResult);
+        Clipboard retrievedClipboard = clipboardService.getClipboardByAccess(createdClipboard.getAccess());
+        assertNull(retrievedClipboard);
     }
 }
