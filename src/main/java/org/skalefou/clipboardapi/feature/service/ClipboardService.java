@@ -29,14 +29,10 @@ public class ClipboardService {
         LocalDateTime today = LocalDateTime.now();
         LocalDateTime expirationDateTest = clipboard.getExpirationTime();
 
-        if (expirationDateTest == null) {
-            clipboard.setExpirationTime(today.plusWeeks(2));
-            expirationDateTest = clipboard.getExpirationTime();
-        }
-
-        if (expirationDateTest.isBefore(today) ||
-                expirationDateTest.isEqual(today) ||
-                expirationDateTest.isAfter(today.plusYears(1)) ||
+        if ((expirationDateTest != null &&
+                (expirationDateTest.isBefore(today) ||
+                        expirationDateTest.isEqual(today) ||
+                        expirationDateTest.isAfter(today.plusYears(1)))) ||
                 allAccess.size() > 999998) {
             return null;
         }
@@ -52,6 +48,10 @@ public class ClipboardService {
 
     public Clipboard updateClipboard(Clipboard clipboard) {
         return clipboardRepository.updateClipboard(clipboard.getContent(), clipboard.getAccess());
+    }
+
+    public boolean deleteClipboard(String access) {
+        return clipboardRepository.deleteClipboardByAccess(access) > 0;
     }
 
 }

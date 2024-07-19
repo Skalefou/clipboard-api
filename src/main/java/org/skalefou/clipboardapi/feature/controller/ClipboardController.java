@@ -41,4 +41,11 @@ public class ClipboardController {
         }
         return clipboard;
     }
+
+    @DeleteMapping("/{access}")
+    public void deleteClipboard(@PathVariable String access) {
+        if (!clipboardService.deleteClipboard(access)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Clipboard not found or has no ID");
+        }
+    }
 }

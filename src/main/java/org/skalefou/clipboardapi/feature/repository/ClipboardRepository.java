@@ -35,4 +35,8 @@ public interface ClipboardRepository extends JpaRepository<Clipboard, UUID> {
     Clipboard updateClipboard(@Param("content") String content,
                               @Param("access") String access);
 
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM clipboard c WHERE c.access = :access", nativeQuery = true)
+    public int deleteClipboardByAccess(@Param("access") String access);
 }
