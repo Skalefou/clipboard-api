@@ -1,5 +1,6 @@
 package org.skalefou.clipboardapi.feature.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.skalefou.clipboardapi.feature.model.Clipboard;
 import org.skalefou.clipboardapi.feature.repository.ClipboardRepository;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class ClipboardService {
 
