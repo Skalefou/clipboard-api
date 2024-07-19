@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.Random;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -38,5 +39,32 @@ public class ClipboardServiceTests {
         // Verif
         assertNotNull(result);
         assertEquals("123456", result.getAccess());
+    }
+
+    @Test
+    void testCreateClipboard() {
+        // Init
+        Clipboard inputClipboard = new Clipboard();
+        inputClipboard.setExpirationTime(LocalDateTime.now().plusDays(1));
+        inputClipboard.setUserId(UUID.randomUUID());
+
+        List<String> existingAccess = List.of("123456");
+        when(clipboardRepository.findAllAccess()).thenReturn(existingAccess);
+
+        // Exec
+        Clipboard result = clipboardService.createClipboard(inputClipboard);
+
+        //Verif
+        assertNotNull(result);
+        assertNotNull(result.getAccess());
+
+        Clipboard retrievedClipboard = clipboardService.getClipboardByAccess(result.getAccess());
+        assertNotNull(retrievedClipboard);
+        assertEquals(inputClipboard.getAccess(), retrievedClipboard.getAccess());
+    }
+
+    @Test
+    void testDeleteClipboard() {
+
     }
 }
