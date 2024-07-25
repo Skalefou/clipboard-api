@@ -6,7 +6,6 @@ import org.skalefou.clipboardapi.feature.model.Clipboard;
 import org.skalefou.clipboardapi.feature.repository.ClipboardRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Random;
@@ -45,7 +44,9 @@ public class ClipboardService {
         } while (allAccess.contains(randomAccess));
 
         UUID userId = (clipboard.getUserId() != null) ? clipboard.getUserId() : null;
-        return clipboardRepository.createClipboard(UUID.randomUUID(), clipboard.getExpirationTime(), randomAccess, userId);
+        UUID id = UUID.randomUUID();
+        int ligneAffected = clipboardRepository.createClipboard(id, clipboard.getExpirationTime(), randomAccess, userId);
+        return ligneAffected > 0 ? clipboardRepository.getClipboardById(id) : null;
     }
 
     public Clipboard updateClipboard(Clipboard clipboard) {

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -47,8 +48,16 @@ public class ClipboardServiceTests {
         inputClipboard.setExpirationTime(LocalDateTime.now().plusDays(1));
         inputClipboard.setUserId(UUID.randomUUID());
 
+        Clipboard expectedClipboard = new Clipboard();
+        expectedClipboard.setAccess("789123");
+
         List<String> existingAccess = List.of("123456");
+
+        // Interaction base
         when(clipboardRepository.findAllAccess()).thenReturn(existingAccess);
+        when(clipboardRepository.createClipboard(any(UUID.class), any(LocalDateTime.class), anyString(), any(UUID.class)))
+                .thenReturn(expectedClipboard);
+        when(clipboardRepository.getClipboardByAccess(expectedClipboard.getAccess())).thenReturn(expectedClipboard);
 
         // Exec
         Clipboard result = clipboardService.createClipboard(inputClipboard);
@@ -59,7 +68,7 @@ public class ClipboardServiceTests {
 
         Clipboard retrievedClipboard = clipboardService.getClipboardByAccess(result.getAccess());
         assertNotNull(retrievedClipboard);
-        assertEquals(inputClipboard.getAccess(), retrievedClipboard.getAccess());
+        assertEquals(expectedClipboard.getAccess(), retrievedClipboard.getAccess());
     }
 
     @Test
@@ -78,5 +87,25 @@ public class ClipboardServiceTests {
         assertTrue(deleteResult);
         Clipboard retrievedClipboard = clipboardService.getClipboardByAccess(createdClipboard.getAccess());
         assertNull(retrievedClipboard);
+    }
+
+    @Test
+    void testUpdateClipboard() {
+        // Init
+        Clipboard originalClipboard = new Clipboard();
+        originalClipboard.setExpirationTime(LocalDateTime.now().plusDays(1));
+        originalClipboard.setUserId(UUID.randomUUID());
+        originalClipboard.setAccess("123456");
+
+        Clipboard createdClipboard = clipboardService.createClipboard(originalClipboard);
+        createdClipboard.setContent("yes");
+
+        // Exec
+        Clipboard updatedClipboard = clipboardService.updateClipboard(createdClipboard);
+
+        // Verif
+        assertNotNull(updatedClipboard);
+        assertEquals(createdClipboard.getContent(), updatedClipboard.getContent());
+        assertEquals(createdClipboard.getAccess(), updatedClipboard.getAccess());
     }
 }
