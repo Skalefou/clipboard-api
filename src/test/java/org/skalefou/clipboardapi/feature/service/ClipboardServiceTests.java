@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class ClipboardServiceTests {
+class ClipboardServiceTests {
     @MockBean
     private ClipboardRepository clipboardRepository;
 
