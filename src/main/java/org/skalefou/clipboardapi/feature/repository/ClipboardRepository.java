@@ -16,8 +16,8 @@ public interface ClipboardRepository extends CrudRepository<Clipboard, UUID> {
     @Query(value = "SELECT * FROM clipboard WHERE access = :access", nativeQuery = true)
     Clipboard getClipboardByAccess(@Param("access") String access);
 
-    @Modifying
     @Transactional
+    @Modifying
     @Query(value = "INSERT INTO clipboard (id, date_creation, expiration_time, last_update, access, user_id) " +
             "VALUES (:id, CURRENT_TIMESTAMP, :expiration_time, CURRENT_TIMESTAMP, :access, :user_id)", nativeQuery = true)
     int createClipboard(@Param("id") UUID id,
@@ -34,9 +34,8 @@ public interface ClipboardRepository extends CrudRepository<Clipboard, UUID> {
     @Modifying
     @Transactional
     @Query(value = "UPDATE clipboard SET content = :content, last_update = CURRENT_TIMESTAMP " +
-            "WHERE access = :access" +
-            "RETURNING *", nativeQuery = true)
-    Clipboard updateClipboard(@Param("content") String content,
+            "WHERE access = :access", nativeQuery = true)
+    int updateClipboard(@Param("content") String content,
                               @Param("access") String access);
 
     @Modifying

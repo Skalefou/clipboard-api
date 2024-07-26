@@ -45,12 +45,16 @@ public class ClipboardService {
 
         UUID userId = (clipboard.getUserId() != null) ? clipboard.getUserId() : null;
         UUID id = UUID.randomUUID();
-        int ligneAffected = clipboardRepository.createClipboard(id, clipboard.getExpirationTime(), randomAccess, userId);
-        return ligneAffected > 0 ? clipboardRepository.getClipboardById(id) : null;
+        clipboardRepository.createClipboard(id, clipboard.getExpirationTime(), randomAccess, userId);
+        return clipboardRepository.getClipboardById(id);
     }
 
     public Clipboard updateClipboard(Clipboard clipboard) {
-        return clipboardRepository.updateClipboard(clipboard.getContent(), clipboard.getAccess());
+        Clipboard updateClip = null;
+        if (clipboardRepository.updateClipboard(clipboard.getContent(), clipboard.getAccess()) > 0) {
+            updateClip = clipboardRepository.getClipboardByAccess(clipboard.getAccess());
+        }
+        return updateClip;
     }
 
     public boolean deleteClipboard(String access) {
