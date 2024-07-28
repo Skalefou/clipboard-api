@@ -30,6 +30,11 @@ public class ClipboardService {
         LocalDateTime today = LocalDateTime.now();
         LocalDateTime expirationDateTest = clipboard.getExpirationTime();
 
+        //TODO: Check if the clipboard has a user_id
+        //TODO: Check if the clipboard has a content
+        //TODO: Checks if AllAccess reaches its limit
+
+        // Check the expiration date to see if it is consistent
         if ((expirationDateTest != null &&
                 (expirationDateTest.isBefore(today) ||
                         expirationDateTest.isEqual(today) ||
