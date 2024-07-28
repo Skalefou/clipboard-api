@@ -1,7 +1,5 @@
 package org.skalefou.clipboardapi.feature.service;
 
-
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -11,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import javax.sound.sampled.Clip;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,7 +28,7 @@ class ClipboardServiceTests {
 
     // Mock global
     private Clipboard expectedClipboard;
-    private final String TEST_CONTENT = "Bonjour";
+    private final String testContent = "Bonjour";
 
     @BeforeEach
     public void setUp() {
@@ -46,7 +43,7 @@ class ClipboardServiceTests {
         when(clipboardRepository.getClipboardById(any(UUID.class))).thenReturn(expectedClipboard);
         when(clipboardRepository.getClipboardByAccess(expectedClipboard.getAccess())).thenReturn(expectedClipboard);
         when(clipboardRepository.deleteClipboardByAccess(expectedClipboard.getAccess())).thenReturn(1);
-        when(clipboardRepository.updateClipboard(TEST_CONTENT, expectedClipboard.getAccess())).thenReturn(1);
+        when(clipboardRepository.updateClipboard(testContent, expectedClipboard.getAccess())).thenReturn(1);
 
     }
 
@@ -75,20 +72,24 @@ class ClipboardServiceTests {
         // Init
         Clipboard clipExpirationBeforeToday = new Clipboard();
         Clipboard clipExpirationAfterOneYear = new Clipboard();
+        Clipboard clipExpirationToday = new Clipboard();
         Clipboard clipAccurate = new Clipboard();
         clipExpirationBeforeToday.setExpirationTime(LocalDateTime.now().minusDays(1));
         clipExpirationAfterOneYear.setExpirationTime(LocalDateTime.now().plusYears(2));
+        clipExpirationToday.setExpirationTime(LocalDateTime.now());
         clipAccurate.setExpirationTime(LocalDateTime.now().plusDays(1));
 
         // Exec
 
         Clipboard resultExpirationBeforeToday = clipboardService.createClipboard(clipExpirationBeforeToday);
         Clipboard resultExpirationAfterOneYear = clipboardService.createClipboard(clipExpirationAfterOneYear);
+        Clipboard resultExpirationToday = clipboardService.createClipboard(clipExpirationToday);
         Clipboard resultAccurate = clipboardService.createClipboard(clipAccurate);
         // Verif
 
         assertNull(resultExpirationBeforeToday);
         assertNull(resultExpirationAfterOneYear);
+        assertNull(resultExpirationToday);
         assertNotNull(resultAccurate);
     }
 
@@ -105,6 +106,23 @@ class ClipboardServiceTests {
 
         // Verif
         assertNull(result);
+    }
+
+    @Test
+    void testGenerateUniqueAccessCode() {
+        // Init
+        Set<String> predefinedAccessCodes = new HashSet<>(Arrays.asList("000001", "000002", "000003"));
+        when(clipboardRepository.findAllAccess()).thenReturn(new ArrayList<>(predefinedAccessCodes));
+
+        Clipboard clipboard = new Clipboard();
+        clipboard.setExpirationTime(LocalDateTime.now().plusDays(1));
+
+        // Exec
+        Clipboard result = clipboardService.createClipboard(clipboard);
+
+        // Verif
+        assertNotNull(result);
+        assertFalse(predefinedAccessCodes.contains(result.getAccess()));
     }
 
     @Test
@@ -131,7 +149,7 @@ class ClipboardServiceTests {
     void testUpdateClipboardValid() {
         // Init
         Clipboard inputClip = expectedClipboard;
-        inputClip.setContent(TEST_CONTENT);
+        inputClip.setContent(testContent);
 
         when(clipboardRepository.getClipboardByAccess(expectedClipboard.getAccess())).thenReturn(inputClip);
 
@@ -140,7 +158,22 @@ class ClipboardServiceTests {
 
         // Verif
         assertNotNull(updatedClipboard);
-        assertEquals(updatedClipboard.getContent(), TEST_CONTENT);
+        assertEquals(updatedClipboard.getContent(), testContent);
         assertEquals(updatedClipboard.getContent(), expectedClipboard.getContent());
+    }
+
+    // Fais moi des tests unitaire pour la méthode getClipboardByAccess
+    @Test
+    void testGetClipboardByAccess() {
+        // Init
+        when(clipboardRepository.getClipboardByAccess("123456")).thenReturn(null);
+
+        // Exec
+        Clipboard resultNull = clipboardService.getClipboardByAccess("123456");
+        Clipboard resultNotNull = clipboardService.getClipboardByAccess(expectedClipboard.getAccess());
+
+        // Verif
+        assertNotNull(resultNotNull);
+        assertNull(resultNull);
     }
 }
