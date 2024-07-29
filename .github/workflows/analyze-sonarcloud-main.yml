@@ -1,9 +1,11 @@
-name: SonarCloud
+name: Analyze SonarCloud and Check Security Hotspots (main)
 on:
   push:
     branches:
       - main
   pull_request:
+    branches:
+      - main
     types: [opened, synchronize, reopened]
 jobs:
   build:
@@ -13,25 +15,43 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           java-version: 21
           distribution: 'zulu' # Alternative distribution options are available.
+
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Skalefou_clipboard-api
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Skalefou_clipboard-api -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+      - name: Check for Security Hotspots
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          PROJECT_KEY=Skalefou_clipboard-api
+          SONAR_URL="https://sonarcloud.io/api/hotspots/search?projectKey=${PROJECT_KEY}"
+          HOTSPOTS=$(curl -s -u $SONAR_TOKEN: $SONAR_URL | jq '.hotspots | length')
+          if [ "$HOTSPOTS" -gt 0 ]; then
+            echo "Security Hotspots detected: $HOTSPOTS"
+            exit 1
+          else
+            echo "No Security Hotspots detected"
+          fi
