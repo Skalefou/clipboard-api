@@ -41,11 +41,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Skalefou_clipboard-api -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-  check_security_hotspots:
-    name: Check for Security Hotspots
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
+
       - name: Check for Security Hotspots
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -58,3 +54,4 @@ jobs:
             exit 1
           else
             echo "No Security Hotspots detected"
+          fi
