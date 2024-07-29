@@ -6,9 +6,9 @@ import org.skalefou.clipboardapi.feature.model.Clipboard;
 import org.skalefou.clipboardapi.feature.repository.ClipboardRepository;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,7 +18,7 @@ import java.util.UUID;
 public class ClipboardService {
 
     private final ClipboardRepository clipboardRepository;
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 
 
     public Clipboard getClipboardByAccess(String access) {
