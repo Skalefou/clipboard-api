@@ -1,5 +1,4 @@
-
-name: Analyze SonarCloud and Check Security Hotspots
+name: Analyze SonarCloud and Check Security Hotspots (main)
 on:
   push:
     branches:
