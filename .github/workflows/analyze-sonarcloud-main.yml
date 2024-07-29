@@ -55,3 +55,6 @@ jobs:
           else
             echo "No Security Hotspots detected"
           fi
+
+      - name: Run unit tests
+        run: mvn test
