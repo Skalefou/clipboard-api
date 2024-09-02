@@ -3,6 +3,7 @@ package org.skalefou.clipboardapi.feature.controller;
 import lombok.RequiredArgsConstructor;
 import org.skalefou.clipboardapi.feature.model.Clipboard;
 import org.skalefou.clipboardapi.feature.service.ClipboardService;
+import org.springframework.core.SpringVersion;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,6 +16,7 @@ public class ClipboardController {
 
     @GetMapping("/{access}")
     public Clipboard getClipboardByAccess(@PathVariable String access) {
+        System.out.println(SpringVersion.getVersion());
         Clipboard clipboard = clipboardService.getClipboardByAccess(access);
         if (clipboard == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Clipboard not found or has no ID");
