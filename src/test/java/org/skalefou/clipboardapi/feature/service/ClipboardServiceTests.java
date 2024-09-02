@@ -44,7 +44,6 @@ class ClipboardServiceTests {
         when(clipboardRepository.getClipboardByAccess(expectedClipboard.getAccess())).thenReturn(expectedClipboard);
         when(clipboardRepository.deleteClipboardByAccess(expectedClipboard.getAccess())).thenReturn(1);
         when(clipboardRepository.updateClipboard(testContent, expectedClipboard.getAccess())).thenReturn(1);
-
     }
 
     @Test
@@ -85,8 +84,8 @@ class ClipboardServiceTests {
         Clipboard resultExpirationAfterOneYear = clipboardService.createClipboard(clipExpirationAfterOneYear);
         Clipboard resultExpirationToday = clipboardService.createClipboard(clipExpirationToday);
         Clipboard resultAccurate = clipboardService.createClipboard(clipAccurate);
-        // Verif
 
+        // Verif
         assertNull(resultExpirationBeforeToday);
         assertNull(resultExpirationAfterOneYear);
         assertNull(resultExpirationToday);
