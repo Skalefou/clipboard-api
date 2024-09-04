@@ -16,18 +16,15 @@ import java.util.UUID;
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UsersRepository usersRepository;
-    private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
     @Override
-    public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
 
-        Users user = usersRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
+        Users user = usersRepository.findByMail(mail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with mail: " + mail));
         if (user == null) {
-            logger.error("User not found with id: " + id);
-            throw new UsernameNotFoundException("User not found with id: " + id);
+            throw new UsernameNotFoundException("User not found with mail:  " + mail);
         }
-        logger.info("User found with id: " + id);
         return new CustomUserDetails(user);
     }
 }

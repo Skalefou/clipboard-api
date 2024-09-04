@@ -2,32 +2,38 @@ package org.skalefou.clipboardapi.feature.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 
 @Component
 public class JwtService {
-    private static String SECRET = "oui";
-    private static final Date EXPIRATION_DATE = new Date(System.currentTimeMillis() + 1000 * 60 * 15);
+    @Value("${jwt.access.expiration.time}")
+    private int expirationTimeAccessMinutes;
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    private final Date expirationDateAccess = new Date(System.currentTimeMillis() + 1000L * 60 * expirationTimeAccessMinutes);
 
     private Key getSignKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
+        byte[] keyBytes = Base64.getUrlDecoder().decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parser()
-                .setSigningKey(SECRET)
+                .setSigningKey(secret)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -42,7 +48,7 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public String extractId(String token) {
+    public String extractMail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -50,19 +56,23 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String id = extractId(token);
-        return !isTokenExpired(token) && userDetails.getUsername().equals(id);
+    public String generateToken(String mail){
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, mail);
     }
 
-    public String createToken(Map<String, Object> claims, UUID id) {
-        String idString = id.toString();
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String mail = extractMail(token);
+        return !isTokenExpired(token) && userDetails.getUsername().equals(mail);
+    }
+
+    public String createToken(Map<String, Object> claims, String mail) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(idString)
+                .setSubject(mail)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(EXPIRATION_DATE)
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .setExpiration(expirationDateAccess)
+                .signWith(getSignKey())
                 .compact();
     }
 

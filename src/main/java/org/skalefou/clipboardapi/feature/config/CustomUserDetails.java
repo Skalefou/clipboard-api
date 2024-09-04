@@ -1,25 +1,34 @@
 package org.skalefou.clipboardapi.feature.config;
 
 import org.skalefou.clipboardapi.feature.model.Users;
+import org.skalefou.clipboardapi.feature.model.UsersRole;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class CustomUserDetails extends Users implements UserDetails {
-    private String id;
+    private String mail;
     private String password;
     Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(final Users users) {
-        this.id = users.getId().toString();
-        this.password = users.getPassword();
+    public CustomUserDetails(Users user) {
+        this.mail = user.getMail();
+        this.password = user.getPassword();
+        List<GrantedAuthority> auths = new ArrayList<>();
+
+        for(UsersRole role : user.getRoles()){
+            auths.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
+        }
+        this.authorities = auths;
     }
 
     @Override
     public String getUsername() {
-        return super.getId().toString();
+        return this.mail;
     }
 
     @Override
@@ -29,7 +38,7 @@ public class CustomUserDetails extends Users implements UserDetails {
 
     @Override
     public String getPassword() {
-        return super.getPassword();
+        return this.password;
     }
 
     @Override
