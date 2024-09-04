@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 // This class represents the model of the 'users' table, thus storing user information
@@ -19,11 +21,14 @@ public class Users {
     private String mail;
 
     @Column(name = "password")
-    private LocalDateTime password;
+    private String password;
 
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
     @Column(name = "last_connection")
     private LocalDateTime lastConnection;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<UsersRole> roles = new HashSet<>();
 }
