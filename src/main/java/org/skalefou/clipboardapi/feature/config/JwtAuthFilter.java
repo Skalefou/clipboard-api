@@ -1,5 +1,6 @@
 package org.skalefou.clipboardapi.feature.config;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -41,6 +42,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 mail = jwtService.extractMail(token);
             } catch (SignatureException e) {
                 GlobalExceptionHandler.handlerExceptionSecurity(httpResponse, HttpStatus.BAD_REQUEST, "Invalid token");
+                return;
+            } catch (ExpiredJwtException e) {
+                GlobalExceptionHandler.handlerExceptionSecurity(httpResponse, HttpStatus.UNAUTHORIZED, "Token expired");
                 return;
             }
         }

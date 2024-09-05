@@ -1,6 +1,7 @@
 package org.skalefou.clipboardapi.feature.config;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -42,12 +43,18 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
+        try {
             return Jwts
                     .parser()
                     .setSigningKey(getSignKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
+        } catch (SignatureException e) {
+            throw new SignatureException("Invalid token");
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredJwtException(null, null, "Token expired");
+        }
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

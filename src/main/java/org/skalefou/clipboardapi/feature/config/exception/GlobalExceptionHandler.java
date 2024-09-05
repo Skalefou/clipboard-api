@@ -1,6 +1,7 @@
 package org.skalefou.clipboardapi.feature.config.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -30,14 +31,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<Object> handleSignatureException(SignatureException e) {
-        System.err.println("Handling SignatureException: " + e.getMessage());
+        System.err.println(e.getMessage());
         return new ResponseEntity<>(generateJsonErrorException(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Object> handleExpiredJwtException(ExpiredJwtException e) {
+        return new ResponseEntity<>(generateJsonErrorException(e.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
 
     @ExceptionHandler(JwtTokenInvalidException.class)
     public ResponseEntity<Object> handleJwtTokenInvalidException(JwtTokenInvalidException e) {
-        return new ResponseEntity<>(generateJsonErrorException(e.getMessage()), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(generateJsonErrorException(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     public static void handlerExceptionSecurity(HttpServletResponse response, HttpStatus httpStatus, String message) {
