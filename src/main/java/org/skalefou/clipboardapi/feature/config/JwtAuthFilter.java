@@ -1,10 +1,14 @@
 package org.skalefou.clipboardapi.feature.config;
 
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.skalefou.clipboardapi.feature.config.exception.GlobalExceptionHandler;
+import org.skalefou.clipboardapi.feature.config.exception.JwtTokenInvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,12 +30,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String mail = null;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            mail = jwtService.extractMail(token);
+            try {
+                token = authHeader.substring(7);
+                mail = jwtService.extractMail(token);
+            } catch (SignatureException e) {
+                GlobalExceptionHandler.handlerExceptionSecurity(httpResponse, HttpStatus.BAD_REQUEST, "Invalid token");
+                return;
+            }
         }
 
         if (mail != null && SecurityContextHolder.getContext().getAuthentication() == null) {

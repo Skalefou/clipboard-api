@@ -2,11 +2,16 @@ package org.skalefou.clipboardapi.feature.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import org.skalefou.clipboardapi.feature.config.exception.GlobalExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Key;
 import java.util.Base64;
@@ -23,7 +28,13 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-    private final Date expirationDateAccess = new Date(System.currentTimeMillis() + 1000L * 60 * expirationTimeAccessMinutes);
+    private GlobalExceptionHandler globalExceptionHandler;
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
+
+    private Date generateExpirationDateAccess() {
+        return new Date(System.currentTimeMillis() + 1000L * 60 * expirationTimeAccessMinutes);
+    }
 
     private Key getSignKey() {
         byte[] keyBytes = Base64.getUrlDecoder().decode(secret);
@@ -31,12 +42,12 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parser()
-                .setSigningKey(secret)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+            return Jwts
+                    .parser()
+                    .setSigningKey(getSignKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -71,7 +82,7 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(mail)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(expirationDateAccess)
+                .setExpiration(generateExpirationDateAccess())
                 .signWith(getSignKey())
                 .compact();
     }

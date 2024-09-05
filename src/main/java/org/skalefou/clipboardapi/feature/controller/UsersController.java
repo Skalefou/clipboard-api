@@ -44,7 +44,7 @@ public class UsersController {
         }
     }
 
-    @PostMapping("/login")
+    @PostMapping("/public/user/login")
     public JwtResponseDTO AuthenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequestDTO.getMail(), authRequestDTO.getPassword())
