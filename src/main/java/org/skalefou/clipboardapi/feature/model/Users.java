@@ -1,7 +1,9 @@
 package org.skalefou.clipboardapi.feature.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -10,7 +12,8 @@ import java.util.UUID;
 
 // This class represents the model of the 'users' table, thus storing user information
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "users")
 public class Users {
     @Id
@@ -23,12 +26,15 @@ public class Users {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "registration_date")
+    @CreationTimestamp
+    @Column(name = "registration_date", updatable = false)
     private LocalDateTime registrationDate;
 
-    @Column(name = "last_connection")
-    private LocalDateTime lastConnection;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Set<UsersRole> roles = new HashSet<>();
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(
+            name = "users_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Roles> roles = new HashSet<>();
 }

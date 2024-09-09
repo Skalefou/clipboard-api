@@ -35,8 +35,7 @@ public class InjectUserAspect {
 
         if (token != null && token.startsWith("Bearer ")) {
             try {
-            String jwtToken = token.substring(7);
-
+                String jwtToken = token.substring(7);
                 String userEmail = jwtService.extractMail(jwtToken);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
@@ -49,7 +48,7 @@ public class InjectUserAspect {
         }
 
         for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof Users) {
+            if (args[i] instanceof Users && user != null) {
                 args[i] = user;
                 break;
             }

@@ -1,7 +1,7 @@
 package org.skalefou.clipboardapi.feature.config;
 
 import org.skalefou.clipboardapi.feature.model.Users;
-import org.skalefou.clipboardapi.feature.model.UsersRole;
+import org.skalefou.clipboardapi.feature.model.Roles;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +20,7 @@ public class CustomUserDetails extends Users implements UserDetails {
         this.password = user.getPassword();
         List<GrantedAuthority> auths = new ArrayList<>();
 
-        for(UsersRole role : user.getRoles()){
+        for(Roles role : user.getRoles()){
             auths.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
         }
         this.authorities = auths;
