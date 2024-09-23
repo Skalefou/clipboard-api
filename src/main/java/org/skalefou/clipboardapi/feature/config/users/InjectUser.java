@@ -1,4 +1,4 @@
-package org.skalefou.clipboardapi.feature.config;
+package org.skalefou.clipboardapi.feature.config.users;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

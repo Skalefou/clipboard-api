@@ -1,4 +1,4 @@
-package org.skalefou.clipboardapi.feature.config;
+package org.skalefou.clipboardapi.feature.config.users;
 
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,12 +8,15 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.skalefou.clipboardapi.feature.config.exception.JwtTokenInvalidException;
+import org.skalefou.clipboardapi.feature.config.security.JwtService;
+import org.skalefou.clipboardapi.feature.config.security.UserDetailsServiceImpl;
 import org.skalefou.clipboardapi.feature.model.Users;
 import org.skalefou.clipboardapi.feature.repository.UsersRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 @Aspect
 @Component
@@ -24,7 +27,7 @@ public class InjectUserAspect {
     private final UsersRepository usersRepository;
     private final HttpServletRequest request;
 
-    @Around("@annotation(org.skalefou.clipboardapi.feature.config.InjectUser)")
+    @Around("@annotation(org.skalefou.clipboardapi.feature.config.users.InjectUser)")
     public Object injectUser(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
@@ -36,11 +39,11 @@ public class InjectUserAspect {
         if (token != null && token.startsWith("Bearer ")) {
             try {
                 String jwtToken = token.substring(7);
-                String userEmail = jwtService.extractMail(jwtToken);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+                String userId = jwtService.extractId(jwtToken);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
 
                 if (jwtService.validateToken(jwtToken, userDetails)) {
-                    user = usersRepository.findByMail(userEmail).orElse(null);
+                    user = usersRepository.findById(UUID.fromString(userId)).orElse(null);
                 }
             } catch (SignatureException e) {
                 throw new JwtTokenInvalidException("Invalid JWT token", e);

@@ -20,11 +20,17 @@ public class Users {
     @GeneratedValue
     private UUID id;
 
-    @Column(name = "mail")
+    @Column(name = "mail", unique = true, updatable = false, columnDefinition = "VARCHAR(255)")
     private String mail;
 
     @Column(name = "password")
     private String password;
+
+    @Column(name = "oauth2_id", unique = true, nullable = true, updatable = false,  columnDefinition = "VARCHAR(255)")
+    private String oauth2Id;
+
+    @Column(name = "oauth2_provider", nullable = true, updatable = false, columnDefinition = "VARCHAR(16)")
+    private String oauth2Provider;
 
     @CreationTimestamp
     @Column(name = "registration_date", updatable = false)

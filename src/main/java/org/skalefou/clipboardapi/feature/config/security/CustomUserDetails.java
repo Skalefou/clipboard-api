@@ -1,4 +1,4 @@
-package org.skalefou.clipboardapi.feature.config;
+package org.skalefou.clipboardapi.feature.config.security;
 
 import org.skalefou.clipboardapi.feature.model.Users;
 import org.skalefou.clipboardapi.feature.model.Roles;

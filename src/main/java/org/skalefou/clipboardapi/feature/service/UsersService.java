@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.skalefou.clipboardapi.feature.model.Roles;
 import org.skalefou.clipboardapi.feature.model.Users;
+import org.skalefou.clipboardapi.feature.model.dto.LoginResponseDTO;
 import org.skalefou.clipboardapi.feature.repository.RolesRepository;
 import org.skalefou.clipboardapi.feature.repository.UsersRepository;
 import org.springframework.http.HttpStatus;

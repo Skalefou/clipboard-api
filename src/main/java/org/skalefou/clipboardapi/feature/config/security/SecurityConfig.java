@@ -1,4 +1,4 @@
-package org.skalefou.clipboardapi.feature.config;
+package org.skalefou.clipboardapi.feature.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

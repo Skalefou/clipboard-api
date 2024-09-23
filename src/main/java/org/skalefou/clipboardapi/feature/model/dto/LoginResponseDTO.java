@@ -5,10 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class JwtResponseDTO {
+public class LoginResponseDTO {
+    private UUID id;
+    private String mail;
+    private LocalDateTime registrationDate;
     private String accessToken;
 }

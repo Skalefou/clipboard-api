@@ -1,7 +1,7 @@
 package org.skalefou.clipboardapi.feature.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.skalefou.clipboardapi.feature.config.InjectUser;
+import org.skalefou.clipboardapi.feature.config.users.InjectUser;
 import org.skalefou.clipboardapi.feature.model.Clipboard;
 import org.skalefou.clipboardapi.feature.model.Users;
 import org.skalefou.clipboardapi.feature.service.ClipboardService;

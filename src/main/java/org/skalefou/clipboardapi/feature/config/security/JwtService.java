@@ -1,4 +1,4 @@
-package org.skalefou.clipboardapi.feature.config;
+package org.skalefou.clipboardapi.feature.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -9,16 +9,11 @@ import org.skalefou.clipboardapi.feature.config.exception.GlobalExceptionHandler
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Component
@@ -66,28 +61,32 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public String extractMail(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String extractId(String token) {
+        return extractClaim(token, Claims::getId);
     }
 
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(String mail){
+    public String extractMail(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public String generateToken(UUID id){
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, mail);
+        return createToken(claims, id.toString());
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String mail = extractMail(token);
-        return !isTokenExpired(token) && userDetails.getUsername().equals(mail);
+        final String id = extractId(token);
+        return !isTokenExpired(token) && userDetails.getUsername().equals(id);
     }
 
-    public String createToken(Map<String, Object> claims, String mail) {
+    public String createToken(Map<String, Object> claims, String id) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(mail)
+                .setSubject(id)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(generateExpirationDateAccess())
                 .signWith(getSignKey())

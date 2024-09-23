@@ -1,4 +1,4 @@
-package org.skalefou.clipboardapi.feature.config;
+package org.skalefou.clipboardapi.feature.config.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -7,7 +7,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.skalefou.clipboardapi.feature.config.exception.GlobalExceptionHandler;
-import org.skalefou.clipboardapi.feature.config.exception.JwtTokenInvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +25,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Autowired
     UserDetailsServiceImpl userDetailsService;
+
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
 
@@ -35,11 +35,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
         String token = null;
-        String mail = null;
+        String id = null;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             try {
                 token = authHeader.substring(7);
-                mail = jwtService.extractMail(token);
+                id = jwtService.extractId(token);
             } catch (SignatureException e) {
                 GlobalExceptionHandler.handlerExceptionSecurity(httpResponse, HttpStatus.BAD_REQUEST, "Invalid token");
                 return;
@@ -49,8 +49,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        if (mail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails usersDetails = userDetailsServiceImpl.loadUserByUsername(mail);
+        if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails usersDetails = userDetailsServiceImpl.loadUserByUsername(id);
             if(jwtService.validateToken(token, usersDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(usersDetails, null, usersDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
