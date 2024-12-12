@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:17.2
+    container_name: clipboard_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: clipboarduser
+      POSTGRES_ROOT_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB: clipboarddb
+    volumes:
+        - db_data:/var/lib/postgresql/data
+    secrets:
+      - db_password
+
+secrets:
+    db_password:
+        file: ./db_password.txt
+
+volumes:
+  db_data:

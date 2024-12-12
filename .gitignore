@@ -34,3 +34,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Docker ###
+db_password.txt
