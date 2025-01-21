@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -27,8 +28,8 @@ public class ClipboardService {
 
     public Clipboard createClipboard(Clipboard clipboard) {
         Set<String> allAccess = new HashSet<>(clipboardRepository.findAllAccess());
-        LocalDateTime today = LocalDateTime.now();
-        LocalDateTime expirationDateTest = clipboard.getExpirationTime();
+        ZonedDateTime today = ZonedDateTime.now();
+        ZonedDateTime expirationDateTest = clipboard.getExpirationTime();
 
         //TODO: Check if the clipboard has a user_id
         //TODO: Check if the clipboard has a content

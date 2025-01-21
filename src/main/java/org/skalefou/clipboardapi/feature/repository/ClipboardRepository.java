@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ public interface ClipboardRepository extends CrudRepository<Clipboard, UUID> {
     @Query(value = "INSERT INTO clipboard (id, date_creation, expiration_time, last_update, access, user_id) " +
             "VALUES (:id, CURRENT_TIMESTAMP, :expiration_time, CURRENT_TIMESTAMP, :access, :user_id)", nativeQuery = true)
     int createClipboard(@Param("id") UUID id,
-                        @Param("expiration_time") LocalDateTime expirationTime,
+                        @Param("expiration_time") ZonedDateTime expirationTime,
                         @Param("access") String access,
                         @Param("user_id") UUID userId);
 
