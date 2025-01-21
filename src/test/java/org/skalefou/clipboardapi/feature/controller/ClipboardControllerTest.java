@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,7 +37,7 @@ class ClipboardControllerTest {
         this.expectedClipboard = new Clipboard();
         this.invalidClipboard = new Clipboard();
         this.expectedClipboard.setAccess("789123");
-        this.invalidClipboard.setExpirationTime(LocalDateTime.now().minusYears(1));
+        this.invalidClipboard.setExpirationTime(ZonedDateTime.now().minusYears(1));
 
         when(clipboardService.getClipboardByAccess(expectedClipboard.getAccess())).thenReturn(expectedClipboard);
         when(clipboardService.getClipboardByAccess("123456")).thenReturn(null);

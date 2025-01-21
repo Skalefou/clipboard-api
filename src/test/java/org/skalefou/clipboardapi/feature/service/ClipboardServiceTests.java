@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ class ClipboardServiceTests {
         expectedClipboard.setAccess("789123");
 
         when(clipboardRepository.findAllAccess()).thenReturn(List.of("123456"));
-        when(clipboardRepository.createClipboard(any(UUID.class), any(LocalDateTime.class), anyString(), any(UUID.class)))
+        when(clipboardRepository.createClipboard(any(UUID.class), any(ZonedDateTime.class), anyString(), any(UUID.class)))
                 .thenReturn(1);
         when(clipboardRepository.getClipboardById(any(UUID.class))).thenReturn(expectedClipboard);
         when(clipboardRepository.getClipboardByAccess(expectedClipboard.getAccess())).thenReturn(expectedClipboard);
@@ -74,10 +75,10 @@ class ClipboardServiceTests {
         Clipboard clipExpirationAfterOneYear = new Clipboard();
         Clipboard clipExpirationToday = new Clipboard();
         Clipboard clipAccurate = new Clipboard();
-        clipExpirationBeforeToday.setExpirationTime(LocalDateTime.now().minusDays(1));
-        clipExpirationAfterOneYear.setExpirationTime(LocalDateTime.now().plusYears(2));
-        clipExpirationToday.setExpirationTime(LocalDateTime.now());
-        clipAccurate.setExpirationTime(LocalDateTime.now().plusDays(1));
+        clipExpirationBeforeToday.setExpirationTime(ZonedDateTime.now().minusDays(1));
+        clipExpirationAfterOneYear.setExpirationTime(ZonedDateTime.now().plusYears(2));
+        clipExpirationToday.setExpirationTime(ZonedDateTime.now());
+        clipAccurate.setExpirationTime(ZonedDateTime.now().plusDays(1));
 
         // Exec
 
@@ -115,7 +116,7 @@ class ClipboardServiceTests {
         when(clipboardRepository.findAllAccess()).thenReturn(new ArrayList<>(predefinedAccessCodes));
 
         Clipboard clipboard = new Clipboard();
-        clipboard.setExpirationTime(LocalDateTime.now().plusDays(1));
+        clipboard.setExpirationTime(ZonedDateTime.now().plusDays(1));
 
         // Exec
         Clipboard result = clipboardService.createClipboard(clipboard);
